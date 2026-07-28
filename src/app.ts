@@ -16,16 +16,10 @@ app.use("/api/v1", IndexRoutes)
 // Basic route
 app.get('/', async (req: Request, res: Response) => {
 
-  const specialty =  await prisma.specialty.create({
-    data: {
-      title: "Cardiology",
-    }
-  })
-
   res.status(201).json({
     success: true,
-    message: 'Api is working',
-    data: specialty,
+    message: 'HMS Backend Api is working',
+  
   })
 });
 
