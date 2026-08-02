@@ -12,6 +12,20 @@ interface EnvConfig {
 }
 
 const loadEnvVariables = (): EnvConfig => {
+    const requiredEnvVars = [
+        'NODE_ENV',
+        'PORT',
+        'DATABASE_URL',
+        'BETTER_AUTH_SECRET',
+        'BETTER_AUTH_URL'
+    ];
+
+    for (const varName of requiredEnvVars) {
+        if (!process.env[varName]) {
+            throw new Error(`Environment variable ${varName} is not set`);
+        }
+    }
+
     return {
         NODE_ENV: process.env.NODE_ENV as string,
         PORT: process.env.PORT as string,
