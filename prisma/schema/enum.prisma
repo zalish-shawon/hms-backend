@@ -5,7 +5,7 @@ enum Role {
 }
 
 enum UserStatus {
-  BLOCK
+  BLOCKED
   DELETED
   ACTIVE
 }

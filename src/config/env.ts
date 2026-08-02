@@ -22,7 +22,7 @@ const loadEnvVariables = (): EnvConfig => {
 
     for (const varName of requiredEnvVars) {
         if (!process.env[varName]) {
-            throw new Error(`Environment variable ${varName} is not set`);
+            throw new Error(`Environment variable ${varName} is not set in env file.`);
         }
     }
 
@@ -36,4 +36,4 @@ const loadEnvVariables = (): EnvConfig => {
 }
 
 
-export const envConfig = loadEnvVariables();
+export const envVars = loadEnvVariables();
