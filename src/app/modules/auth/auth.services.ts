@@ -24,7 +24,9 @@ const registerPatient = async (payload: RegisterPatientPayload) => {
     throw new Error("Patient registration failed");
   }
 
-  const patient = await prisma.$transaction(async (tx) => {
+
+  try {
+      const patient = await prisma.$transaction(async (tx) => {
     const patientTx = await tx.patient.create({
       data: {
         userID: data.user.id,
@@ -41,6 +43,16 @@ const registerPatient = async (payload: RegisterPatientPayload) => {
     ...data,
     patient,
   };
+  } catch (error) {
+    console.log("Transaction Error : ", error);
+    await prisma.user.delete({
+      where: {
+        id: data.user.id,
+      },
+    });
+    throw new Error("Failed to create patient record, user deleted");
+  }
+
 };
 
 interface ILoginUserPayload {
