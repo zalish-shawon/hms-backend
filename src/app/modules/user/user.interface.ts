@@ -10,11 +10,11 @@ export interface ICreateDoctorPayload {
         contactNumber?: string;
         address?: string;
         registrationNumber: string;
-        experienceYears?: number;
+        experience?: number;
         gender: Gender;
         appointmentFee: number;
-        qualifications: string;
-        currentWorkplace: string;
+        qualification: string;
+        currentWorkingPlace: string;
         designation: string;
         averageRating?: number;
     },
