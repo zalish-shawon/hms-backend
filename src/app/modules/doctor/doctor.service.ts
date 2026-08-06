@@ -15,6 +15,11 @@ const getAllDoctors = async () : Promise<Doctor[]> => {
   return doctors;
 };
 
+
+
+
+
+
 export const DoctorService = {
     getAllDoctors,
 }
