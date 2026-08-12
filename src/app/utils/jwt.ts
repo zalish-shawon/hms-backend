@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-const createToken = () => {
-    
-=======
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 
 const createToken = (payload: JwtPayload, secret: string, {expiresIn} : SignOptions) => {
@@ -39,5 +35,4 @@ export const jwtUtils = {
     createToken,
     verifyToken,
     decodedToken,
->>>>>>> ce400d666271adb87176685544ce96b352792a90
 }
