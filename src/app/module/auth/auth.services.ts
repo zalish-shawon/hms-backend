@@ -3,6 +3,7 @@ import { User, UserStatus } from "../../../generated/prisma/client";
 import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { tokenUtils } from "../../utils/token";
 
 interface RegisterPatientPayload {
   name: string;
@@ -23,28 +24,26 @@ const registerPatient = async (payload: RegisterPatientPayload) => {
   });
 
   if (!data.user) {
-     throw new AppError(status.BAD_REQUEST, "Failed to register patient");
+    throw new AppError(status.BAD_REQUEST, "Failed to register patient");
   }
 
-
   try {
-      const patient = await prisma.$transaction(async (tx) => {
-    const patientTx = await tx.patient.create({
-      data: {
-        userID: data.user.id,
-        name: payload.name,
-        email: payload.email,
+    const patient = await prisma.$transaction(async (tx) => {
+      const patientTx = await tx.patient.create({
+        data: {
+          userID: data.user.id,
+          name: payload.name,
+          email: payload.email,
+        },
+      });
 
-      },
+      return patientTx;
     });
 
-    return patientTx;
-  });
-
-  return {
-    ...data,
-    patient,
-  };
+    return {
+      ...data,
+      patient,
+    };
   } catch (error) {
     console.log("Transaction Error : ", error);
     await prisma.user.delete({
@@ -54,7 +53,6 @@ const registerPatient = async (payload: RegisterPatientPayload) => {
     });
     throw new Error("Failed to create patient record, user deleted");
   }
-
 };
 
 interface ILoginUserPayload {
@@ -73,7 +71,6 @@ const loginUser = async (payload: ILoginUserPayload) => {
   });
 
   if (!data.user) {
-    
     throw new AppError(status.UNAUTHORIZED, "Invalid email or password");
   }
 
@@ -82,10 +79,34 @@ const loginUser = async (payload: ILoginUserPayload) => {
   }
 
   if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
-     throw new AppError(status.NOT_FOUND, "User is deleted");
+    throw new AppError(status.NOT_FOUND, "User is deleted");
   }
 
-  return data;
+  const accessToken = tokenUtils.getAccessToken({
+    userId: data.user.id,
+    role: data.user.role,
+    name: data.user.name,
+    email: data.user.email,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: data.user.id,
+    role: data.user.role,
+    name: data.user.name,
+    email: data.user.email,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  return {
+    ...data,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const AuthService = {
